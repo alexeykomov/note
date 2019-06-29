@@ -38,3 +38,4 @@ enum NoteImportance {
 }
 
 let note = Note(title: "", content: "", importance: .usual)
+
