@@ -37,5 +37,3 @@ enum NoteImportance {
     case important
 }
 
-let note = Note(title: "", content: "", importance: .usual)
-

@@ -1,3 +1,6 @@
+import Foundation
+import UIKit
+
 func parseColor(colorString: String) -> UIColor? {
     do {
         guard let regexp = try? NSRegularExpression(pattern: #"[\d\.]+"#) else {
@@ -49,45 +52,27 @@ func getImportance(_ json: [String:Any]) -> NoteImportance {
     return importance
 }
 
-struct Note {
-    init(uuid: String = UUID().uuidString,
-         title: String,
-         content: String,
-         color: UIColor = .white,
-         importance: NoteImportance,
-         selfDestructionDate: Date = Date(timeIntervalSince1970: 0)) {
-        self.uuid = uuid
-        self.title = title
-        self.content = content
-        self.color = color
-        self.importance = importance
-        self.selfDestructionDate = selfDestructionDate
+let formatter = DateFormatter()
+formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+formatter.timeZone = TimeZone(secondsFromGMT: 0)
+formatter.locale = Locale(identifier: "en_US_POSIX")
+
+func getDate(_ json: [String:Any]) -> Date {
+    guard let selfDestructionDateString = json["selfDestructionDate"] as? String else {
+        return Date(timeIntervalSince1970: 0)
     }
-    
-    let uuid:String
-    let title: String
-    let content: String
-    let color: UIColor
-    let importance: NoteImportance
-    let selfDestructionDate: Date
+    guard let selfDestructoinDate = formatter.date(from: selfDestructionDateString) else {
+        return Date(timeIntervalSince1970: 0)
+    }
+    return selfDestructoinDate
 }
-
-enum NoteImportance: String {
-    case notImportant = "notImportant"
-    case usual = "usual"
-    case important = "important"
-}
-
-let note = Note(title: "", content: "", importance: .usual)
 
 extension Note {
     static func parse(json: [String: Any]) -> Note? {
         guard
             let uuid = json["uuid"] as? String,
             let title = json["title"] as? String,
-            let content = json["content"] as? String,
-            let selfDestructionDateString = json["selfDestructionDate"] as? String,
-            let date = formatter.date(from: selfDestructionDateString) else {
+            let content = json["content"] as? String else {
                 return nil
         }
         
@@ -96,7 +81,7 @@ extension Note {
                     content: content,
                     color: getColor(json),
                     importance: getImportance(json),
-                    selfDestructionDate: date)
+                    selfDestructionDate: getDate(json))
     }
     
     var json: [String: Any] {
@@ -112,7 +97,7 @@ extension Note {
             var b: CGFloat = 0
             var a: CGFloat = 0
             self.color.getRed(&r, green: &g, blue: &b, alpha: &a)
-            json["color"] = "rgba(\(r),\(g),\(b),\(a)"
+            json["color"] = "rgba(\(r),\(g),\(b),\(a))"
         }
         
         if self.importance != .usual {
@@ -124,7 +109,3 @@ extension Note {
         return json
     }
 }
-
-let formatter = DateFormatter()
-formatter.dateFormat = "yyyy-MM-dd"
-formatter.locale = Locale(identifier: "en_US_POSIX")
