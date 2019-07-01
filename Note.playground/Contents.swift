@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import PlaygroundSupport
 
 enum NoteImportance: String {
     case notImportant = "notImportant"
@@ -146,13 +147,16 @@ extension Note {
     }
 }
 
+let parseNote = Note.parse
 
-class FileNotebok {
+class FileNotebook {
 
     var notes:[String: Note] = [:]
     
     var Note: [String: Note] {
-        return self.notes
+        get {
+            return self.notes
+        }
     }
     
     public func add(_ note: Note) {
@@ -164,44 +168,87 @@ class FileNotebok {
     }
     
     public func saveToFile() {
-        let jsonRepr = self.notes.map { (uuid, note) in
+        let jsonRepr = self.notes.map { (key, note) in
             note.json
         }
+        print("jsonRepr: \(jsonRepr)")
         do {
-            let data = try JSONSerialization.data(withJSONObject: jsonRepr, options: [])
-            guard let path = FileManager.default.urls(for: .cachesDirectory,
-                                                      in: .userDomainMask).first else {
-                return
-            }
-            let jsonNotebookPath = path.appendingPathComponent("notebook.json")
+            //let data = try JSONSerialization.data(withJSONObject: jsonRepr, options: [])
+//            guard let path = FileManager.default.urls(for: .cachesDirectory,
+//                                                      in: .userDomainMask).first else {
+//                print("cannot retrieve path")
+//                return
+//            }
+//            let jsonNotebookPath = path.appendingPathComponent("notebook.json")
+            print("playgroundSharedDataDirectory \(playgroundSharedDataDirectory)")
+            let jsonNotebookPath = playgroundSharedDataDirectory.appendingPathComponent("notebook.json")
+
             guard let stream = OutputStream(toFileAtPath: jsonNotebookPath.path , append: false) else {
+                print("cannot open file")
                 return
             }
+            print("before write")
+
             stream.open()
             defer {
                 stream.close()
             }
             var error: NSError?
             JSONSerialization.writeJSONObject(jsonRepr, to: stream, error: &error)
+            stream.close()
+            print("after write")
             if let error = error {
-                print(error)
+                print("error when writing file: \(error)")
             }
-        } catch {
-            
+        }
+        catch {
+            print("error when saving: \(error)")
         }
     }
     
     public func loadFromFile() {
-        guard let stream = InputStream(to) else {
+//        guard let path = FileManager.default.urls(for: .cachesDirectory,
+//                                                  in: .userDomainMask).first else {
+//                                                    return
+//        }
+//        let jsonNotebookPath = path.appendingPathComponent("notebook.json")
+        let jsonNotebookPath = playgroundSharedDataDirectory.appendingPathComponent("notebook.json")
+
+        guard let stream = InputStream(fileAtPath: jsonNotebookPath.path) else {
             return
         }
-        JSONSerialization.jsonObject(stream: InputStream, options opt:  [])
+        stream.open()
+        defer {
+            stream.close()
+        }
+        do {
+            let res = try JSONSerialization.jsonObject(with: stream, options: [])
+            guard let arr = res as? [[String:Any]] else {
+                return
+            }
+            arr.forEach { noteJSON in
+                parseNote(noteJSON)
+                self.add(note)
+            }
+        }
+        catch {
+            print("error: \(error)")
+        }
     }
 }
 
 let note = Note(title: "test", content: "Some content", color: UIColor.red, importance: .important, selfDestructionDate: Date(timeIntervalSince1970: 30 * 24 * 60 * 60 * 1000 + 123))
-print(note.json)
-
 
 let noteFromJSON = Note.parse(json: note.json)
-print(noteFromJSON)
+
+let notebook = FileNotebook()
+
+notebook.add(note)
+notebook.add(Note(title: "test2", content: "Really nothing", importance: .usual))
+
+print("Note: \(notebook.Note)")
+
+notebook.saveToFile()
+notebook.loadFromFile()
+
+print("Note: \(notebook.Note)")
