@@ -2,12 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:FileNotebook.swift">
-   </FileRef>
-   <FileRef
-      location = "group:NoteExtension.swift">
-   </FileRef>
-   <FileRef
-      location = "group:Note.swift">
+      location = "group:Note/Note.xcodeproj">
    </FileRef>
 </Workspace>
