@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Note
 import UIKit
 
 let parseNote = Note.parse
@@ -83,7 +82,10 @@ class FileNotebook {
                 return
             }
             arr.forEach { noteJSON in
-                parseNote(noteJSON)
+                guard let note = parseNote(noteJSON) else {
+                    print("Cannot parse note")
+                    return
+                }
                 self.add(note)
             }
         }

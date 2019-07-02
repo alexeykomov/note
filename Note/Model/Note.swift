@@ -31,9 +31,9 @@ struct Note {
     let selfDestructionDate: Date
 }
 
-enum NoteImportance {
-    case notImportant
-    case usual
-    case important
+enum NoteImportance: String {
+    case notImportant = "notImportant"
+    case usual = "usual"
+    case important = "important"
 }
 

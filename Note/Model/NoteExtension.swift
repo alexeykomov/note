@@ -52,16 +52,27 @@ func getImportance(_ json: [String:Any]) -> NoteImportance {
     return importance
 }
 
-let formatter = DateFormatter()
-formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
-formatter.timeZone = TimeZone(secondsFromGMT: 0)
-formatter.locale = Locale(identifier: "en_US_POSIX")
+class NoteDateFormatter {
+    static var formatter: DateFormatter?
+    
+    static func getDefault() -> DateFormatter {
+        guard let formatter = NoteDateFormatter.formatter else {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            NoteDateFormatter.formatter = formatter
+            return formatter
+        }
+        return formatter
+    }
+}
 
 func getDate(_ json: [String:Any]) -> Date {
     guard let selfDestructionDateString = json["selfDestructionDate"] as? String else {
         return Date(timeIntervalSince1970: 0)
     }
-    guard let selfDestructoinDate = formatter.date(from: selfDestructionDateString) else {
+    guard let selfDestructoinDate = NoteDateFormatter.getDefault().date(from: selfDestructionDateString) else {
         return Date(timeIntervalSince1970: 0)
     }
     return selfDestructoinDate
@@ -104,7 +115,7 @@ extension Note {
             json["importance"] = self.importance.rawValue
         }
         
-        json["selfDestructionDate"] = formatter.string(from: self.selfDestructionDate)
+        json["selfDestructionDate"] = NoteDateFormatter.getDefault().string(from: self.selfDestructionDate)
         
         return json
     }
