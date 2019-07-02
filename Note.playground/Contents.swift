@@ -75,10 +75,10 @@ func getDate(_ json: [String:Any]) -> Date {
     guard let selfDestructionDateString = json["selfDestructionDate"] as? String else {
         return Date(timeIntervalSince1970: 0)
     }
-    guard let selfDestructoinDate = formatter.date(from: selfDestructionDateString) else {
+    guard let selfDestructionDate = formatter.date(from: selfDestructionDateString) else {
         return Date(timeIntervalSince1970: 0)
     }
-    return selfDestructoinDate
+    return selfDestructionDate
 }
 
 struct Note {

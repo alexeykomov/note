@@ -9,33 +9,86 @@ import Foundation
 import Note
 import UIKit
 
-class FileNotebok {
-    private notes = [String: Note]()
+let parseNote = Note.parse
+
+class FileNotebook {
+    
+    var notes:[String: Note] = [:]
     
     var Note: [String: Note] {
-        return notes
+        get {
+            return self.notes
+        }
     }
     
     public func add(_ note: Note) {
-        notes[note.uid] = note
+        
+        self.notes[note.uuid] = note
     }
     public func remove(with uid: String) {
-        notes[uid] = nil
+        self.notes[uid] = nil
     }
     
     public func saveToFile() {
-        let jsonRepr = notes.map { note in
+        let jsonRepr = self.notes.map { (key, note) in
             note.json
         }
         do {
-            let data = try JSONSerialization.data(withJSONObject: jsonRepr, options: [])
-            let path = FileManager.default.
-        } catch {
+            guard let path = FileManager.default.urls(for: .cachesDirectory,
+                                                      in: .userDomainMask).first else {
+                print("cannot retrieve path")
+                return
+            }
+            let jsonNotebookPath = path.appendingPathComponent("notebook.json")
+            guard let stream = OutputStream(toFileAtPath: jsonNotebookPath.path , append: false) else {
+                print("cannot open file")
+                return
+            }
+            print("before write")
             
+            stream.open()
+            defer {
+                stream.close()
+            }
+            var error: NSError?
+            JSONSerialization.writeJSONObject(jsonRepr, to: stream, error: &error)
+            stream.close()
+            print("after write")
+            if let error = error {
+                print("error when writing file: \(error)")
+            }
+        }
+        catch {
+            print("error when saving: \(error)")
         }
     }
     
     public func loadFromFile() {
+        guard let path = FileManager.default.urls(for: .cachesDirectory,
+                                                  in: .userDomainMask).first else {
+                                                    return
+        }
+        let jsonNotebookPath = path.appendingPathComponent("notebook.json")
         
+        guard let stream = InputStream(fileAtPath: jsonNotebookPath.path) else {
+            return
+        }
+        stream.open()
+        defer {
+            stream.close()
+        }
+        do {
+            let res = try JSONSerialization.jsonObject(with: stream, options: [])
+            guard let arr = res as? [[String:Any]] else {
+                return
+            }
+            arr.forEach { noteJSON in
+                parseNote(noteJSON)
+                self.add(note)
+            }
+        }
+        catch {
+            print("error: \(error)")
+        }
     }
 }
