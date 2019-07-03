@@ -252,3 +252,8 @@ notebook.saveToFile()
 notebook.loadFromFile()
 
 print("Note: \(notebook.Note)")
+
+
+var b: UInt = 7
+b -= 7
+print(b)
