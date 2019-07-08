@@ -6,5 +6,5 @@ The project is in **Note.xcworkspace**.
 
 **Note.playground** is for practicing with code for project.
 
-Look into `func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {` method 
+Look into `func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool` method 
 	for code for both tasks.
