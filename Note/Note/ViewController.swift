@@ -9,6 +9,14 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    @IBOutlet var centerLabel: UILabel!
+    var block: () -> Void
+    
+    required init?(coder aDecoder: NSCoder) {
+        self.block = {}
+        super.init(coder: aDecoder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -28,6 +36,10 @@ class ViewController: UIViewController {
             label.text = prevText + " Release"
             #endif
         }
+        self.block = {
+            NSLog("%@", self)
+        }
+        print("View loaded")
     }
 
 

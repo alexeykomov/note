@@ -79,7 +79,7 @@ func getDate(_ json: [String:Any]) -> Date {
 }
 
 extension Note {
-    static func parse(json: [String: Any]) -> Note? {
+    static func parse(json: [String: Any], notebook: FileNotebook) -> Note? {
         guard
             let uuid = json["uuid"] as? String,
             let title = json["title"] as? String,
@@ -92,7 +92,8 @@ extension Note {
                     content: content,
                     color: getColor(json),
                     importance: getImportance(json),
-                    selfDestructionDate: getDate(json))
+                    selfDestructionDate: getDate(json),
+                    notebook: notebook)
     }
     
     var json: [String: Any] {

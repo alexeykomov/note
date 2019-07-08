@@ -14,13 +14,15 @@ struct Note {
          content: String,
          color: UIColor = .white,
          importance: NoteImportance,
-         selfDestructionDate: Date = Date(timeIntervalSince1970: 0)) {
+         selfDestructionDate: Date = Date(timeIntervalSince1970: 0),
+         notebook: FileNotebook) {
         self.uuid = uuid
         self.title = title
         self.content = content
         self.color = color
         self.importance = importance
         self.selfDestructionDate = selfDestructionDate
+        self.notebook = notebook
     }
     
     let uuid:String
@@ -29,6 +31,7 @@ struct Note {
     let color: UIColor
     let importance: NoteImportance
     let selfDestructionDate: Date
+    let notebook: FileNotebook
 }
 
 enum NoteImportance: String {

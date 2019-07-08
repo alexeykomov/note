@@ -82,7 +82,7 @@ class FileNotebook {
                 return
             }
             arr.forEach { noteJSON in
-                guard let note = parseNote(noteJSON) else {
+                guard let note = parseNote(noteJSON, self) else {
                     print("Cannot parse note")
                     return
                 }

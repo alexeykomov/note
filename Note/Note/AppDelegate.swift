@@ -15,6 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let notebook = FileNotebook()
+        notebook.add(Note(title: "Note for testing memory leak",
+                          content: "Lorem ipsum",
+                          importance: .usual,
+                          notebook: notebook))
         return true
     }
 
