@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct Note {
+struct Note: Equatable {
     init(uuid: String = UUID().uuidString,
          title: String,
          content: String,
