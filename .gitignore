@@ -17,9 +17,6 @@ log/
 # Node
 node_modules
 
-# iOS
-Note.xcworkspace/xcuserdata/
-
 # Project
 build
 client_secret_*.json
